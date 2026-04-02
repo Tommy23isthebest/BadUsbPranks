@@ -21,7 +21,7 @@ void setup() {
   pln(PSTR("from Quartz import CGWarpMouseCursorPosition"));
   pln(PSTR("def p():"));
   pln(PSTR(" r=subprocess.run(['ioreg','-p','IOUSB'],capture_output=1,text=1,timeout=2)"));
-  pln(PSTR(" return '5840' in r.stdout"));
+  pln(PSTR(" return '5824' in r.stdout"));
   pln(PSTR("while 1:"));
   pln(PSTR(" time.sleep(3 if p() else 120)"));
   pln(PSTR(" CGWarpMouseCursorPosition((random.randint(0,2560),random.randint(0,1600)))"));
