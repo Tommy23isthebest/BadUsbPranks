@@ -2,37 +2,41 @@
 #include <avr/pgmspace.h>
 
 // DigiSpark — Windows Mouse Jiggler (Standalone)
-// Writes a hidden PowerShell script that teleports the mouse every 2 minutes.
-// Survives unplugging — kill with: Stop-Process -Name powershell (in Task Manager)
+// Uses SetCursorPos via user32.dll — works reliably in hidden processes.
+// Timing: 3 seconds while DigiSpark is plugged in, 120 seconds when unplugged.
+// Survives unplugging — kill with the uninstaller sketch or Task Manager.
 
-void ptype(const char* s){char c;while((c=pgm_read_byte(s++))){DigiKeyboard.print(c);delay(8);}}
+void ptype(const char* s){char c;while((c=pgm_read_byte(s++))){DigiKeyboard.update();DigiKeyboard.print(c);DigiKeyboard.delay(10);}}
 void pln(const char* s){ptype(s);DigiKeyboard.sendKeyStroke(KEY_ENTER);DigiKeyboard.delay(80);}
 
 void setup() {
   DigiKeyboard.delay(5000);
 
-  // Win+R → open Run dialog
+  // Win+R → PowerShell
   DigiKeyboard.sendKeyStroke(0x15, MOD_GUI_LEFT);
-  DigiKeyboard.delay(1200);  // wait for Run dialog to appear
-
+  DigiKeyboard.delay(1200);
   ptype(PSTR("powershell"));
   DigiKeyboard.sendKeyStroke(KEY_ENTER);
-  DigiKeyboard.delay(3500);  // wait for PowerShell window to fully open
+  DigiKeyboard.delay(3500);
 
-  // Write the script using a here-string (handles any chars safely)
+  // Write the script using a here-string
   pln(PSTR("$f=\"$env:TEMP\\j.ps1\""));
   pln(PSTR("@'"));
-  pln(PSTR("Add-Type -AssemblyName System.Windows.Forms"));
+
+  // Load SetCursorPos from user32.dll — works from hidden/background processes
+  pln(PSTR("Add-Type -TypeDefinition 'using System;using System.Runtime.InteropServices;public class M{[DllImport(\"user32.dll\")]public static extern bool SetCursorPos(int x,int y);}' -Language CSharp"));
+
+  // 3s when DigiSpark is plugged in (VID_16C0), 120s when unplugged
   pln(PSTR("while(1){"));
-  pln(PSTR(" Start-Sleep 120"));
-  pln(PSTR(" $x=Get-Random -Min 0 -Max 2560"));
-  pln(PSTR(" $y=Get-Random -Min 0 -Max 1600"));
-  pln(PSTR(" [System.Windows.Forms.Cursor]::Position=New-Object System.Drawing.Point($x,$y)"));
+  pln(PSTR(" if(Test-Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Enum\\USB\\VID_16C0'){Start-Sleep 3}"));
+  pln(PSTR(" else{Start-Sleep 120}"));
+  pln(PSTR(" [M]::SetCursorPos((Get-Random -Min 0 -Max 2560),(Get-Random -Min 0 -Max 1600))"));
   pln(PSTR("}"));
+
   pln(PSTR("'@ | sc $f"));
 
-  // Launch script hidden — path quoted to handle spaces in user profile
-  pln(PSTR("Start-Process powershell -WindowStyle Hidden -ArgumentList \"-File\",\"`\"$f`\"\""));
+  // Launch hidden — $f passed as separate array element so spaces in path are safe
+  pln(PSTR("Start-Process powershell -ArgumentList \"-WindowStyle\",\"Hidden\",\"-File\",$f"));
   pln(PSTR("exit"));
 }
 void loop(){DigiKeyboard.delay(1);}
