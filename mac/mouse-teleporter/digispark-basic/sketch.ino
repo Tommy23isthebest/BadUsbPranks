@@ -12,12 +12,18 @@ void setup() {
   DigiKeyboard.delay(500);
   DigiKeyboard.sendKeyStroke(KEY_ENTER);
   DigiKeyboard.delay(4000);
+
+  // Plugged in (DigiSpark vendor ID 5840): jiggle every 3s — obvious
+  // Unplugged: teleport every 2 min — subtle
   pln(PSTR("cat>/tmp/.j.py<<'E'"));
   DigiKeyboard.delay(300);
+  pln(PSTR("import subprocess,time,random"));
   pln(PSTR("from Quartz import CGWarpMouseCursorPosition"));
-  pln(PSTR("import time,random"));
+  pln(PSTR("def p():"));
+  pln(PSTR(" r=subprocess.run(['ioreg','-p','IOUSB'],capture_output=1,text=1,timeout=2)"));
+  pln(PSTR(" return '5840' in r.stdout"));
   pln(PSTR("while 1:"));
-  pln(PSTR(" time.sleep(120)"));
+  pln(PSTR(" time.sleep(3 if p() else 120)"));
   pln(PSTR(" CGWarpMouseCursorPosition((random.randint(0,2560),random.randint(0,1600)))"));
   pln(PSTR("E"));
   DigiKeyboard.delay(500);
