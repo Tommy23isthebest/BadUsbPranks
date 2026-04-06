@@ -1,0 +1,38 @@
+#include "DigiKeyboard.h"
+
+// Digispark — Kill Script for Mac Caps + Mouse Prank
+//
+// Plug into the target Mac. Automatically opens Terminal,
+// removes the LaunchAgent, kills the running script and deletes the file.
+// Takes about 5 seconds total.
+//
+// Board: Digispark (Default - 16.5mhz)
+// Install Digistump AVR boards via Board Manager if not already added.
+// This is for a digisprk
+
+void setup() {
+  DigiKeyboard.delay(3000);
+
+  // Cmd+Space → Spotlight → Terminal
+  DigiKeyboard.sendKeyStroke(KEY_SPACE, MOD_GUI_LEFT);
+  DigiKeyboard.delay(1000);
+  DigiKeyboard.print("Terminal");
+  DigiKeyboard.delay(500);
+  DigiKeyboard.sendKeyStroke(KEY_ENTER);
+  DigiKeyboard.delay(3000);
+
+  // Unload and delete LaunchAgent
+  DigiKeyboard.println("launchctl unload ~/Library/LaunchAgents/com.apple.update.plist");
+  DigiKeyboard.delay(300);
+  DigiKeyboard.println("rm -f ~/Library/LaunchAgents/com.apple.update.plist");
+  DigiKeyboard.delay(300);
+
+  // Kill the running script and delete it
+  DigiKeyboard.println("pkill -f /tmp/.c.py; rm -f /tmp/.c.py");
+  DigiKeyboard.delay(300);
+
+  // Close Terminal window
+  DigiKeyboard.sendKeyStroke(KEY_W, MOD_GUI_LEFT);
+}
+
+void loop() {}
